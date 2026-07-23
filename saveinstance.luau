@@ -2616,7 +2616,7 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 
 		-- ! Risky
 
-		IgnoreSharedStrings = false,
+		IgnoreSharedStrings = EXECUTOR_NAME ~= "Wave" and EXECUTOR_NAME ~= "Potassium" and EXECUTOR_NAME ~= "Zenith" and EXECUTOR_NAME ~= "Seliware",
 		SharedStringOverwrite = false,
 		TreatUnionsAsParts = EXECUTOR_NAME == "Solara", -- TODO Temporary true (once removed, remove Note from docs too)
 		AlternativeWritefile = not ArrayToDict({ "WRD", "Xeno", "Zorara" })[EXECUTOR_NAME],
