@@ -64,6 +64,7 @@ local EXECUTOR_NAME = identify_executor and identify_executor() or ""
 
 -- local cloneref = global_container.cloneref
 local gethiddenproperty = global_container.gethiddenproperty
+print("gethiddenproperty:", gethiddenproperty)
 
 -- These should be universal enough
 local appendfile = appendfile
@@ -2895,7 +2896,7 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 	local IgnorePropertiesOfNotScriptsOnScriptsMode = OPTIONS.IgnorePropertiesOfNotScriptsOnScriptsMode
 
 	local old_gethiddenproperty
-	if OPTIONS.IgnoreSpecialProperties and gethiddenproperty then
+	if OPTIONS and gethiddenproperty then
 		old_gethiddenproperty = gethiddenproperty
 		gethiddenproperty = nil
 	end
