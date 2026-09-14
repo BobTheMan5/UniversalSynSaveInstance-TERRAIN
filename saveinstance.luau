@@ -4106,6 +4106,7 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 	local SaveNotCreatable = OPTIONS.SaveNotCreatable
 	local TreatUnionsAsParts = OPTIONS.TreatUnionsAsParts
 
+	local SaveServerScripts = OPTIONS.SaveServerScripts
 	local SharedBinaryStrings = OPTIONS.SharedBinaryStrings
 
 	local ToSaveList, ldecompile, placename, elapse_t, SaveNotCreatableWillBeEnabled, RecoveredScripts
@@ -4281,7 +4282,6 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 	local IsolatePlayers = OPTIONS.IsolatePlayers
 	local IsolateStarterPlayer = OPTIONS.IsolateStarterPlayer
 	local NilInstances = OPTIONS.NilInstances
-	local SaveServerScripts = OPTIONS.SaveServerScripts
 
 	if IsolatePlayers and IsolateLocalPlayer then
 		IsolateLocalPlayer = false
