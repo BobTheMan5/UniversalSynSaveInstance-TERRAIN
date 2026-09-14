@@ -3575,6 +3575,7 @@ end
 --- @field BytecodeTimeout number -- If the SaveBytecode run time exceeds this value it gets cancelled. Set to -1 to disable timeout. ___Default:___ 3
 --- @field DecompileJobless boolean -- Includes already decompiled code in the output. No new scripts are decompiled. ___Default:___ false
 --- @field SaveBytecode boolean -- Includes bytecode in the output. Useful if you wish to be able to decompile it yourself later. Respects **@DecompileIgnore**. ___Default:___ false
+--- @field SaveServerScripts boolean -- Attempts to decompile/save server-side Script sources when the executor exposes them. FilteringEnabled usually prevents this, so unsupported scripts still receive a warning placeholder. ___Default:___ false
 --- .DecompileIgnore {Instance | Instance.ClassName | [Instance.ClassName] = {Instance.Name}} -- Ignores matched instances and their descendants by default. To ignore only the instance itself, set the value to `false`. Examples: `"Chat"` matches any instance with ClassName "Chat"; `Players = {"MyPlayerName"}` matches class "Players" AND name "MyPlayerName" only; `workspace` matches a specific instance by reference; `[workspace] = false` matches a specific instance by reference, ignoring only itself and not its descendants. ___Default:___ {TextChatService}
 --- .IgnoreList {Instance | Instance.ClassName | [Instance.ClassName] = {Instance.Name | false}} -- Structure mirrors **@DecompileIgnore**, except `false` means keep the instance but ignore its descendants. Supports both instance references and ClassName strings. Examples: `"CoreGui"` skips entirely; `CorePackages = false` keeps the instance but skips its descendants; `Players = {"SomePlayer"}` skips a specific named instance with specific ClassName. ___Default:___ {CoreGui, CorePackages, Packages = false}
 --- .ExtraInstances {Instance} -- If used with any invalid mode (like "invalidmode") it will only save these instances. ___Default:___ {}
@@ -3684,6 +3685,7 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 		-- decomptype = "",
 		scriptcache = true,
 		SaveBytecode = false,
+		SaveServerScripts = false,
 		BytecodeTimeout = 3,
 
 		__DEBUG_MODE = false,
@@ -4279,6 +4281,7 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 	local IsolatePlayers = OPTIONS.IsolatePlayers
 	local IsolateStarterPlayer = OPTIONS.IsolateStarterPlayer
 	local NilInstances = OPTIONS.NilInstances
+	local SaveServerScripts = OPTIONS.SaveServerScripts
 
 	if IsolatePlayers and IsolateLocalPlayer then
 		IsolateLocalPlayer = false
@@ -4592,8 +4595,9 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 		if should_decompile then
 			local isLocalScript = instance:IsA("LocalScript")
 			if
-				isLocalScript and instance.RunContext == Enum.RunContext.Server
-				or not isLocalScript and instance:IsA("Script") and instance.RunContext ~= Enum.RunContext.Client
+				not SaveServerScripts
+				and (isLocalScript and instance.RunContext == Enum.RunContext.Server
+					or not isLocalScript and instance:IsA("Script") and instance.RunContext ~= Enum.RunContext.Client)
 			then
 				value = "-- [FilteringEnabled] Server Scripts are IMPOSSIBLE to save" -- TODO: Could be not just server scripts in the future
 			else
