@@ -2952,6 +2952,7 @@ local GLOBAL_ENV = getgenv and getgenv() or _G or shared
 --- @within SynSaveInstance
 --- @field __DEBUG_MODE boolean -- This will print debug logs to console about unusual scenarios. Recommended to enable if you wish to help us improve our products and find bugs / issues with it! ___Default:___ false
 --- @field ReadMe boolean --___Default:___ true
+--- @field SaveServerScripts boolean -- Attempts to decompile/save server-side Script sources when the executor exposes them. FilteringEnabled usually prevents this, so unsupported scripts still receive a warning placeholder. ___Default:___ false
 --- @field SafeMode boolean -- Kicks you before Saving, which keeps you safe. **HIGHLY RECOMMENDED TO KEEP ENABLED**. ___Default:___ true
 --- @field KillAllScripts boolean -- Kills all scripts to further protect you. SafeMode also enables this by default. If you can't move after saving then this is the reason. **HIGHLY RECOMMENDED TO KEEP ENABLED**. ___Default:___ true
 --- @field BoostFPS boolean -- Massively boosts FPS by disabling 3D rendering. Other options also enable it, like: SafeMode. ___Default:___ false
@@ -3088,6 +3089,7 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 		},
 		IgnoreDefaultPlayerScripts = true,
 		SaveBytecode = false,
+                SaveServerScripts = false,
 
 		IgnoreProperties = {},
 
@@ -3444,6 +3446,8 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 	if DecompileJobless then
 		OPTIONS.scriptcache = true
 	end
+
+        local SaveServerScripts = OPTIONS.SaveServerScripts
 	local ScriptCache = OPTIONS.scriptcache and getscriptbytecode
 
 	local IgnoreSharedStrings = OPTIONS.IgnoreSharedStrings
@@ -4429,11 +4433,12 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
 												if should_decompile then
 													local isLocalScript = instance:IsA("LocalScript")
 													if
-														isLocalScript
+														not SaveServerScripts
+														and (isLocalScript
 															and instance.RunContext == Enum.RunContext.Server
-														or not isLocalScript
-															and instance:IsA("Script")
-															and instance.RunContext ~= Enum.RunContext.Client
+															or not isLocalScript
+																and instance:IsA("Script")
+																and instance.RunContext ~= Enum.RunContext.Client)
 													then
 														value =
 															"-- [FilteringEnabled] Server Scripts are IMPOSSIBLE to save" -- TODO: Could be not just server scripts in the future
